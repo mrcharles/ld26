@@ -8,12 +8,15 @@ local player
 local level
 local encyclopedia
 
+debugDraw = true
 
 local function fallFunc(self, dt)
-	local gravity = 600
+	local gravity = 612
 
 	self.velocity = (self.velocity or Vector(0,0)) + Vector(0, gravity * dt)
-	self.pos = self.pos + self.velocity * dt 
+	local delta = self.velocity * dt
+
+	self:move(delta.x, delta.y)
 end
 
 function love.load()
@@ -22,23 +25,25 @@ function love.load()
 	local m = encyclopedia:find(1)
 	player = m:instance()
 	player.scale = 3
-	player:setPos(100,100)
-	player.move = fallFunc
+	player.physics = fallFunc
 
 
 	level = World:new()
-	level:addEntity(player)
+	level:addEntity(player, {-3, 0, 6, 4})
+
+	player:setPos(100,100)
 
 	print(love.graphics.getWidth(),love.graphics.getHeight())
+	--love.graphics.setBackgroundColor(0,128,128)
 end
 
 function love.update(dt)
 	level:update(dt)
-	for i,rows in pairs(encyclopedia.things) do
-		for i,thing in ipairs(rows) do
-			thing:update(dt)
-		end
-	end
+	-- for i,rows in pairs(encyclopedia.things) do
+	-- 	for i,thing in ipairs(rows) do
+	-- 		thing:update(dt)
+	-- 	end
+	-- end
 
 end
 

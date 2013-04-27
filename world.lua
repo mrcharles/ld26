@@ -25,8 +25,14 @@ function World:addRectangle(t,l,w,h)
 	table.insert( parts, { f = "rectangle", params = {"fill", t,l,w,h}})
 end
 
-function World:addEntity(e)
+function World:addEntity(e, phys)
 	table.insert(self.entities, e)
+
+	if phys then
+		local scale = e.scale or 1
+		local x,y,w,h = unpack(phys)
+		e.shape = self.Collider:addRectangle(x*scale, y*scale, w*scale, h*scale)
+	end
 end
 
 function World:makeScreenBounds()

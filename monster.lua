@@ -332,7 +332,12 @@ function Monster:draw()
 		love.graphics.setColor(255,255,255)
 	end
 
-	love.graphics.draw(self.images[self.frame], 0,0,0,scale,scale,-4,-8)
+	love.graphics.draw(self.images[self.frame], 0,0,0,scale,scale,4,7)
+
+	if debugDraw then
+		love.graphics.setColor(255,0,0)
+		love.graphics.circle("fill",0.5,0.5,1)
+	end
 
 	love.graphics.pop()
 end
