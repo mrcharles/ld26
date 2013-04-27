@@ -17,6 +17,22 @@ function Encyclopedia:init()
 	return self
 end
 
+function Encyclopedia:find(bits,class)
+	class = class or "normal"
+
+	local list = self.things[class]
+
+	for i,m in ipairs(list) do
+		if m.dna.bits == bits then
+			return m
+		end
+	end
+
+	--if we get here, we didn't find anything.
+	assert(false, "nothing found")
+
+end
+
 function Encyclopedia:generate()
 	local insert = table.insert
 	local things = self.things

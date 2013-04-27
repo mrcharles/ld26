@@ -6,11 +6,21 @@ local Monster = Tools:Class(Base)
 
 function Monster:init(bits)
 	Base.init(self)
-	self.dna = self:makeDNA(bits)
-	self:createImages(self.dna)
+	if bits then
+		self.dna = self:makeDNA(bits)
+	end
 	self.frame = "stand"
 	self.anims = {}
 	return self
+end
+
+function Monster:instance()
+	local m = Monster:init()
+
+	m.dna = Tools:copy(self.dna)
+	m.images = self.images
+
+	return m
 end
 
 function Monster:createImages()
@@ -129,15 +139,11 @@ function Monster:createImages()
 
 end
 
-function Monster:makeDNA(bits)
-	local dna = {}
+function Monster:addBits(bits)
+	if not bits or bits <= 0 then return end
 
-	for i=1,6 do
-		local strand = {}
-		strand[ math.random(4) ] = true
-		dna[i] = strand
-	end
-
+	local dna = self.dna
+	dna.bits = dna.bits + bits
 	while bits > 0 do
 		local x,y = math.random(4), math.random(6)
 
@@ -146,6 +152,21 @@ function Monster:makeDNA(bits)
 			bits = bits - 1
 		end
 	end
+	self:createImages()
+	return dna
+end
+
+function Monster:makeDNA(bits)
+	local dna = {}
+	dna.bits = 0
+	for i=1,6 do
+		local strand = {}
+		strand[ math.random(4) ] = true
+		dna[i] = strand
+	end
+	self.dna = dna
+
+	self:addBits(bits)
 
 	return dna
 end
@@ -212,7 +233,7 @@ function Monster:isPogo() -- if it touches the ground only from one place
 end
 
 function Monster:jump()
-	if self:isPlant() then
+	if self:isPlant() or self:isImmobile() then
 		return
 	end
 	self.frame = "jump"
@@ -287,6 +308,7 @@ function Monster:update(dt)
 			i = i + 1
 		end
 	end
+	Base.update(self,dt)
 end
 
 function Monster:draw()
