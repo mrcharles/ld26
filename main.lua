@@ -3,10 +3,13 @@ local Monster = require 'monster'
 local Encyclopedia = require 'encyclopedia'
 local World = require 'world'
 local Vector = require 'hump.vector'
+local Room = require 'room'
+local Camera = require 'hump.camera'
 
 local player 
 local level
 local encyclopedia
+local camera
 
 debugDraw = true
 
@@ -20,17 +23,18 @@ local function fallFunc(self, dt)
 end
 
 function love.load()
+
 	encyclopedia = Encyclopedia:new()
 
 	local m = encyclopedia:find(1)
 	player = m:instance()
-	player.scale = 3
+	player.scale = 5
 	player.physics = fallFunc
 
-
-	level = World:new()
+	local room = Room:new(2,2)
+	level = World:new(room)
 	level:addEntity(player, {-3, 0, 6, 4})
-
+	level:setFocus(player)
 	player:setPos(100,100)
 
 	print(love.graphics.getWidth(),love.graphics.getHeight())
@@ -39,14 +43,21 @@ end
 
 function love.update(dt)
 	local moving = false
+	local run = love.keyboard.isDown("lshift")
+
+	local speed = 140
+	if run then
+		speed = speed * 1.5
+	end
+
 	if love.keyboard.isDown("a") then
-		player:move(-100 * dt, 0)
-		player:run()
+		player:move(-speed * dt, 0)
+		player:run(true)
 		moving = true
 	end
 	if love.keyboard.isDown("d") then
-		player:move(100 * dt, 0)
-		player:run()
+		player:move(speed * dt, 0)
+		player:run(true)
 		moving = true
 	end
 
@@ -71,7 +82,9 @@ function love.keypressed(key)
 end
 
 function love.draw()
+	
 	level:draw()
+
 	-- for i,rows in pairs(encyclopedia.things) do
 	-- 	for i,thing in ipairs(rows) do
 	-- 		thing:draw()

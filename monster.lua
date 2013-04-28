@@ -248,12 +248,12 @@ function Monster:jump()
 	table.insert(self.anims, {new = true, t=0.1, f = function() self.frame = "stand"; self.anim = nil end})
 end
 
-function Monster:run(loop)
+function Monster:run(fast, loop)
 	if self:isPlant() or not self:canRun() then
 		return 
 	end
 
-	if not loop and self.onground and self.anim == "running" then
+	if not self.onground or (self.anim == "running" and not loop) then
 		return
 	end
 
@@ -261,8 +261,15 @@ function Monster:run(loop)
 
 	self.frame = "run"
 	self.anims = {}
-	table.insert(self.anims, {new = true, t=0.1, f = function() self.frame = "stand" end})
-	table.insert(self.anims, {new = true, t=0.2, f = function() self:run(true) end})
+
+	local fastmod = 1
+
+	if fast then
+		fastmod = 0.7
+	end
+
+	table.insert(self.anims, {new = true, t=0.1*fastmod, f = function() self.frame = "stand" end})
+	table.insert(self.anims, {new = true, t=0.2*fastmod, f = function() self:run(fast, true) end})
 
 end
 

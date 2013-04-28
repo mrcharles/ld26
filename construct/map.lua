@@ -44,10 +44,13 @@ end
 
 
 
-function Map:iterate(iterator)
+function Map:iterate(iterator, validator)
 	for y=self.y,self.height do
 		for x=self.x,self.width do
-			iterator(x,y,self:get(x,y))
+			local v = self:get(x,y)
+			if not validator or validator(v) then
+				iterator(x,y,v)
+			end
 		end
 	end	
 end
