@@ -232,23 +232,37 @@ function Monster:isPogo() -- if it touches the ground only from one place
 	end
 end
 
+function Monster:stand()
+	self.anims = {}
+	self.frame = "stand"
+	self.anim = nil
+end
+
 function Monster:jump()
 	if self:isPlant() or self:isImmobile() then
 		return
 	end
+	self.anim = "jumping"
 	self.frame = "jump"
 	self.anims = {}
-	table.insert(self.anims, {new = true, t=0.1, f = function() self.frame = "stand" end})
+	table.insert(self.anims, {new = true, t=0.1, f = function() self.frame = "stand"; self.anim = nil end})
 end
 
-function Monster:run()
+function Monster:run(loop)
 	if self:isPlant() or not self:canRun() then
 		return 
 	end
+
+	if not loop and self.onground and self.anim == "running" then
+		return
+	end
+
+	self.anim = "running"
+
 	self.frame = "run"
 	self.anims = {}
 	table.insert(self.anims, {new = true, t=0.1, f = function() self.frame = "stand" end})
-	table.insert(self.anims, {new = true, t=0.2, f = function() self:run() end})
+	table.insert(self.anims, {new = true, t=0.2, f = function() self:run(true) end})
 
 end
 
@@ -256,6 +270,8 @@ function Monster:fly()
 	if not self:canFly() then
 		return 
 	end
+
+	self.anim = "flying"
 	self.frame = "fly"
 	self.anims = {}
 	table.insert(self.anims, {new = true, t=0.2, f = function() self.frame = "stand" end})

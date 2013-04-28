@@ -38,6 +38,21 @@ function love.load()
 end
 
 function love.update(dt)
+	local moving = false
+	if love.keyboard.isDown("a") then
+		player:move(-100 * dt, 0)
+		player:run()
+		moving = true
+	end
+	if love.keyboard.isDown("d") then
+		player:move(100 * dt, 0)
+		player:run()
+		moving = true
+	end
+
+	if not moving and player.onground then
+		player:stand()
+	end
 	level:update(dt)
 	-- for i,rows in pairs(encyclopedia.things) do
 	-- 	for i,thing in ipairs(rows) do
@@ -48,28 +63,11 @@ function love.update(dt)
 end
 
 function love.keypressed(key)
-	if key == "z" then
-		for i,rows in pairs(encyclopedia.things) do
-			for i,thing in ipairs(rows) do
-				thing:run()
-			end
-		end
+	if key == " " and player.onground then
+		player:jump()
+		player.velocity = Vector(0,-400)
+		player.onground = nil
 	end
-	if key == " " then
-		for i,rows in pairs(encyclopedia.things) do
-			for i,thing in ipairs(rows) do
-				thing:jump()
-			end
-		end
-	end
-	if key == "x" then
-		for i,rows in pairs(encyclopedia.things) do
-			for i,thing in ipairs(rows) do
-				thing:fly()
-			end
-		end
-	end
-
 end
 
 function love.draw()
